@@ -27,3 +27,33 @@ If you don't use one of those editors, Lean speaks
 can write a plugin for your editor be sure to share it.
 
 That's all you need to get started.
+
+## Hello, World ##
+
+Copy the following program into a text file and name it `hello.lean`:
+
+``` lean
+import system.io
+
+open io
+
+def hello_world : io unit :=
+    put_str "Hello, world!\n"
+
+#eval hello_world
+```
+
+Lean is awesome and you should be able to see the result of the
+`#eval` line in your editor.  This is because Lean is built to run and
+evaluate programs interactively.  However you can also run this as a
+program on the command line by opening up your favourite terminal and
+running:
+
+``` shell
+$ lean hello.lean
+Hello, world!
+```
+
+If you have installed everything right you should see the above
+output.  If not check that you have the `lean` binary, at least, in
+your system's path and that you're using Lean 3.
