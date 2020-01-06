@@ -16,9 +16,11 @@ packages from the releases page or build from source.
 I recommend building from source.  Make sure to add the built binaries
 to your path and you're off to the races.
 
-The two major editors for working with Lean are VS Code and Emacs.
-Both have plugins that work well and offer full completion, jump to
-definition, error hints, etc.
+The two major editors for working with Lean are [VS
+Code](https://code.visualstudio.com/) and
+[Emacs](https://www.gnu.org/software/emacs/).  Both have supported
+plugins that work well and offer full completion, jump to definition,
+error hints, etc.
 
 If you don't use one of those editors, Lean speaks
 [LSP](https://microsoft.github.io/language-server-protocol/).  If you
