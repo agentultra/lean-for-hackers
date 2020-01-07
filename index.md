@@ -94,20 +94,20 @@ Hello, Random J. Hacker!
 
 ## Introducing Lean ##
 
-Lean is a dependently-typed programming language.  It has a powerful
-framework for proving mathematical theorems built-in.  And libraries
-of theorems to get you started.
+Lean is a strictly-evaluated, pure, dependently-typed programming
+language.  It has a powerful framework for proving mathematical
+theorems built-in.  And libraries of theorems to get you started.
 
-The primary focus of Lean and its intended purpose is for mathematical
-research.  Almost all of its documentation focuses on this.  But
-that's not all Lean is useful for!
+The primary focus of Lean is mathematical research and its intended
+audience are mathematicians.  All of the documentation and tutorials
+are built around this purpose and audience.
 
 This guide fills the missing gap for the programmers.  If you've tried
 Agda or Idris you will find Lean to be familiar.  If you're more
-familiar with Haskell, F#, Scala, or OCaml you will also be able to
-sink right into Lean.  This section is provides an overview to get you
-up to speed or familiarize you with the fundamentals of Lean you need
-to know to write your first programs with it.
+comfortable with Haskell, F#, Scala, or OCaml you will be able to sink
+right into Lean.  This section provides an overview to get you up to
+speed or familiarize you with the fundamentals of Lean you need to
+know to write your first programs with it.
 
 ### Hello World, Revisited ###
 
@@ -124,12 +124,11 @@ declarations.  This module includes a basic library for doing common
 things with input and output such as reading files and writing to the
 terminal.
 
-Some declarations can be something called a `namespace` which we
-`open` on the next line.  This handy feature prevents the common
-problem with module systems such as Haskell's where declarations are
-imported into the module's global name space by default.  This line
-adds the declarations in the `io` name space to our module's global
-name space.
+You can declare something called a `namespace`. We `open` one on the
+next line.  This handy feature prevents the common problem with module
+systems such as Haskell's where declarations are imported into the
+module's global name space by default.  This line adds the
+declarations in the `io` name space to our module's global name space.
 
 If we omit the `open io` line then we'd have to prefix our use of
 `put_str` with the name space: `io.put_str`.  Go ahead and modify
@@ -150,11 +149,8 @@ functions are also values as much as strings and integers and anything
 else you can define.
 
 The colon can be read as, "has type."  This is the same syntax as
-Purescript and is equivalent to Haskell's `::`.  The cool thing about
-Lean, and dependently-typed languages in general, is that we use the
-same language in expressions as we do in types.  We'll see more
-practical uses of that later.  This definition has type, `io unit`
-which is the same as Haskell's, `IO ()`.
+Purescript and is equivalent to Haskell's `::`. This definition has
+type, `io unit` which is the same as Haskell's, `IO ()`.
 
 Lean took a note out of the Haskell playbook and uses the _Monad_
 abstraction to model computations that perform input and output.  If
