@@ -265,3 +265,26 @@ type of our expression.
 
 When we `#eval` this function and run our program, Lean runs through
 each action one at a time and we get our expected behaviour.
+
+### Recapping the Introduction ###
+
+In order to get our feet wet we hackers need to know three things:
+
+1. How to read input, display output
+1. How to define values
+1. How to apply functions
+
+We broke down the canonical `"Hello, world!"` example and demonstrated
+how you can:
+
+1. Print strings to the console and read input from the user with `io`
+1. Define functions with `def`
+1. How to call functions and sequence together `io` actions
+
+We also learned a couple of _commands_ which, in Lean, enable us to
+evaluate expressions and query Lean using `#eval` and `#check`
+respectively.
+
+The next thing we need to learn are more data types, structures, and
+libraries we have available to construct more interesting and useful
+programs.
