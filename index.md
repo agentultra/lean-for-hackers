@@ -176,3 +176,92 @@ program so we explicitly use the `#eval` command to evaluate our
 `hello_world` function.  This function evaluates to an IO action so
 the Lean VM executes it for us and writes our greeting to the
 terminal.
+
+### Greetings, Revisited ###
+
+The next thing we do is get input from the user and display a
+personalized greeting.  We need to get input from the standard input
+stream, ie: the user. And we need to print our greeting back out.
+
+Let's talk about our `greet` function:
+
+``` lean
+def greet (s : string) : io unit :=
+  put_str $ "Hello, " ++ s ++ "!\n"
+```
+
+This is a handy notation for defining a function of a fixed arity.
+This function takes one parameter we name `s`.  It has the type of
+`string`.  If we want to define a function with more parameters we
+simply add another pair of parentheses before the colon separated by a
+space:
+
+``` lean
+def example (s : string) (p : int) : io unit := ...
+```
+
+We also introduce a new function, `++`.  We use an infix _operator_
+notation for it.  It's the `append` function.  You can tell this using
+another handy command, `#check`:
+
+``` lean
+#check (++)
+```
+
+Just like in Haskell we have to put parentheses around operators.  If
+your editor is able to talk to the Lean server this should pop up with
+the type of `++` which is `append : ?M_1 → ?M_1 → ?M_1`.  The `?M_1`
+is Lean's placeholder for a _polymorphic type variable_.  The arrows
+are just like `->` in Haskell and other functional programming
+languages and represent function types.  Since `(++)` is defined for
+the `string` type we can use it to append the parts of our message
+together.
+
+Next we change the `main` function of our program.  Here we see that
+Lean has taken another play from Haskell's book: the _do_ notation:
+
+``` lean
+def main : io unit := do
+  put_str "What is your name? ",
+  name ← get_line,
+  greet name
+```
+
+Just as in Haskell this notation is syntactic sugar for chaining
+together _bind_ operations in a _monadic context_.  That basically
+means that we can extract values from functions that return `io
+something` and use them to compute other things including other
+functions returning other `io somethings`.  We're defining two such
+actions and we use them here, one per line.
+
+Notice the commas at the end of each line but the last in our function
+definition.  These are sort of like semi-colons in a C-like imperative
+language.  They make sure the indentation is not important unlike the
+Haskell version.
+
+There's also the left-arrow on the second line.  You can type that if
+you're using VS Code or Emacs with the Lean plugin by typing `\l` in
+the buffer and pressing space.  If you cannot, `<-` will also work.
+
+Lean makes use of unicode symbols that mathematicians are used to.  So
+these plugins make it easy to enter these symbols using a clever short
+hand and some keyboard shortcuts.  They all start with `\` and some
+letters.  Editor support varies but in Emacs it does a prefix search
+on the letters you type and you can navigate the symbols with similar
+names using shortcuts to get the one you mean.  This has a practical
+reason beyond making mathematicians happy which we'll get into when we
+start discussing the type system in more detail.
+
+The left arrow in a `do` block tells Lean to resolve the computation
+on the right-hand side of the arrow in our `io` context and bind it's
+result to the identifier on the left side of the arrow.  The _action_
+`get_line` awaits the user to input some characters into a buffer and
+returns that buffer to us as a `string`.
+
+Finally we evaluate our `greet` function in the last step which
+returns an `io unit`, that matches our type for the definition of
+`main` and thus is a valid final action for the block and will be the
+type of our expression.
+
+When we `#eval` this function and run our program, Lean runs through
+each action one at a time and we get our expected behaviour.
