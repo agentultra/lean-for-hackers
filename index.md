@@ -37,20 +37,15 @@ import system.io
 
 open io
 
-def hello_world : io unit :=
+def main : io unit :=
     put_str "Hello, world!\n"
-
-#eval hello_world
 ```
 
-Lean is awesome and you should be able to see the result of the
-`#eval` line in your editor.  This is because Lean is built to run and
-evaluate programs interactively.  However you can also run this as a
-program on the command line by opening up your favourite terminal and
-running:
+You run this as a program on the command line by opening up your
+favourite terminal and running:
 
 ``` shell
-$ lean hello.lean
+$ lean --run hello.lean
 Hello, world!
 ```
 
@@ -76,18 +71,12 @@ def main : io unit := do
   put_str "What is your name? ",
   name ← get_line,
   greet name
-
-#eval main
 ```
 
-You may notice that you can no longer see the result of the `#eval`
-line in your editor.  That's because the `get_line` function awaits
-input from the terminal so there's nothing it can sensibly display.
-However running this in a shell from your terminal does what you'd
-expect:
+Running this in a shell from your terminal does what you'd expect:
 
 ``` shell
-$ lean greet.lean
+$ lean --run greet.lean
 What is your name? Random J. Hacker
 Hello, Random J. Hacker!
 ```
@@ -161,21 +150,8 @@ computation.  In our example it's `unit`, a type with a single
 inhabitant... sort of like `null`.  Since our "IO" _action_ doesn't
 return anything, it merely prints to the console, we return `io unit`.
 
-Finally we see the `#eval hello_world` line.  This is a _command_ in
-Lean.  This command _evaluates_ a Lean expression.
-
-Commands are most often used to _query_ Lean for information.  If
-you're familiar with languages that have a REPL you might do this sort
-of thing using that.  In Haskell this would look like, `:type
-someFunc`.  Lean markets itself as an _interactive_ theorem prover and
-it let's you do this in your source buffer without having to leave and
-switch to a REPL.
-
-Lean doesn't have any concept of an implicit entry-point into our
-program so we explicitly use the `#eval` command to evaluate our
-`hello_world` function.  This function evaluates to an IO action so
-the Lean VM executes it for us and writes our greeting to the
-terminal.
+At the top level our special main function returns an `io` action so
+the Lean VM will go ahead and evaluate our program for us.
 
 ### Greetings, Revisited ###
 
@@ -202,11 +178,15 @@ def example (s : string) (p : int) : io unit := ...
 
 We also introduce a new function, `++`.  We use an infix _operator_
 notation for it.  It's the `append` function.  You can tell this using
-another handy command, `#check`:
+a cool Lean feature called a _command_, `#check`:
 
 ``` lean
 #check (++)
 ```
+
+A command is something you can type into your editor which we can use
+to query the Lean system.  This command allows us to inspect the type
+of any expression that comes after it.
 
 Just like in Haskell we have to put parentheses around operators.  If
 your editor is able to talk to the Lean server this should pop up with
@@ -263,8 +243,8 @@ returns an `io unit`, that matches our type for the definition of
 `main` and thus is a valid final action for the block and will be the
 type of our expression.
 
-When we `#eval` this function and run our program, Lean runs through
-each action one at a time and we get our expected behaviour.
+When we run our program, Lean runs through each action one at a time
+and we get our expected behaviour.
 
 ### Recapping the Introduction ###
 
@@ -281,9 +261,8 @@ how you can:
 1. Define functions with `def`
 1. How to call functions and sequence together `io` actions
 
-We also learned a couple of _commands_ which, in Lean, enable us to
-evaluate expressions and query Lean using `#eval` and `#check`
-respectively.
+We also learned about the `#check` command for querying Lean about
+types.
 
 The next thing we need to learn are more data types, structures, and
 libraries we have available to construct more interesting and useful
