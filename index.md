@@ -22,9 +22,9 @@ Code](https://code.visualstudio.com/) and
 plugins that work well and offer full completion, jump to definition,
 error hints, etc.
 
-If you don't use one of those editors, Lean speaks
-[LSP](https://microsoft.github.io/language-server-protocol/).  If you
-can write a plugin for your editor be sure to share it.
+If you don't use one of those editors, `lean --server` speaks JSON
+over `stdin`.  If you can write a plugin for your editor be sure to
+share it.
 
 That's all you need to get started.
 
