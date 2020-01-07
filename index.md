@@ -57,3 +57,37 @@ Hello, world!
 If you have installed everything right you should see the above
 output.  If not check that you have the `lean` binary, at least, in
 your system's path and that you're using Lean 3.
+
+## Hello, ${name}! ##
+
+Once we have our obligatory greeting out of the way the next step is
+to ask the user to input their name and greet them properly.  Modify
+`hello.lean` or paste the following program into a new file:
+
+``` lean
+import system.io
+
+open io
+
+def greet (s : string) : io unit :=
+  put_str $ "Hello, " ++ s ++ "!\n"
+
+def main : io unit := do
+  put_str "What is your name? ",
+  name ← get_line,
+  greet name
+
+#eval main
+```
+
+You may notice that you can no longer see the result of the `#eval`
+line in your editor.  That's because the `get_line` function awaits
+input from the terminal so there's nothing it can sensibly display.
+However running this in a shell from your terminal does what you'd
+expect:
+
+``` shell
+$ lean greet.lean
+What is your name? Random J. Hacker
+Hello, Random J. Hacker!
+```
