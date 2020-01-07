@@ -76,8 +76,6 @@ def main : io unit := do
   put_str "What is your name? ",
   name ← get_line,
   greet name
-
-#eval main
 ```
 
 You may notice that you can no longer see the result of the `#eval`
@@ -87,7 +85,7 @@ However running this in a shell from your terminal does what you'd
 expect:
 
 ``` shell
-$ lean greet.lean
+$ lean --run greet.lean
 What is your name? Random J. Hacker
 Hello, Random J. Hacker!
 ```
