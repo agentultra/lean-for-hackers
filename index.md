@@ -91,3 +91,92 @@ $ lean greet.lean
 What is your name? Random J. Hacker
 Hello, Random J. Hacker!
 ```
+
+## Introducing Lean ##
+
+Lean is a dependently-typed programming language.  It has a powerful
+framework for proving mathematical theorems built-in.  And libraries
+of theorems to get you started.
+
+The primary focus of Lean and its intended purpose is for mathematical
+research.  Almost all of its documentation focuses on this.  But
+that's not all Lean is useful for!
+
+This guide fills the missing gap for the programmers.  If you've tried
+Agda or Idris you will find Lean to be familiar.  If you're more
+familiar with Haskell, F#, Scala, or OCaml you will also be able to
+sink right into Lean.  This section is provides an overview to get you
+up to speed or familiarize you with the fundamentals of Lean you need
+to know to write your first programs with it.
+
+### Hello World, Revisited ###
+
+The first things a hacker needs to know to start messing around with a
+new language are:
+
+1. How to read input, display output
+1. How to declare values
+1. How to apply functions
+
+The first thing we do in `hello.lean` is import `system.io`.  `import`
+is a keyword that includes a Lean module.  Modules in Lean contain
+declarations.  This module includes a basic library for doing common
+things with input and output such as reading files and writing to the
+terminal.
+
+Some declarations can be something called a `namespace` which we
+`open` on the next line.  This handy feature prevents the common
+problem with module systems such as Haskell's where declarations are
+imported into the module's global name space by default.  This line
+adds the declarations in the `io` name space to our module's global
+name space.
+
+If we omit the `open io` line then we'd have to prefix our use of
+`put_str` with the name space: `io.put_str`.  Go ahead and modify
+`hello.lean` to see what I mean.
+
+As the Python hackers say, _explicit is better than implicit_.
+
+Next we have our first definition:
+
+``` lean
+def hello_world : io unit :=
+put_str "Hello, world!\n"
+```
+
+As you may have guessed, `def` is our keyword for defining values.
+Lean is a dependently typed functional programming language and so
+functions are also values as much as strings and integers and anything
+else you can define.
+
+The colon can be read as, "has type."  This is the same syntax as
+Purescript and is equivalent to Haskell's `::`.  The cool thing about
+Lean, and dependently-typed languages in general, is that we use the
+same language in expressions as we do in types.  We'll see more
+practical uses of that later.  This definition has type, `io unit`
+which is the same as Haskell's, `IO ()`.
+
+Lean took a note out of the Haskell playbook and uses the _Monad_
+abstraction to model computations that perform input and output.  If
+you're not familiar with IO in Haskell it's enough to know that if you
+want to read files or print things to the console your function will
+return `io something` where `something` is the return type of the
+computation.  In our example it's `unit`, a type with a single
+inhabitant... sort of like `null`.  Since our "IO" _action_ doesn't
+return anything, it merely prints to the console, we return `io unit`.
+
+Finally we see the `#eval hello_world` line.  This is a _command_ in
+Lean.  This command _evaluates_ a Lean expression.
+
+Commands are most often used to _query_ Lean for information.  If
+you're familiar with languages that have a REPL you might do this sort
+of thing using that.  In Haskell this would look like, `:type
+someFunc`.  Lean markets itself as an _interactive_ theorem prover and
+it let's you do this in your source buffer without having to leave and
+switch to a REPL.
+
+Lean doesn't have any concept of an implicit entry-point into our
+program so we explicitly use the `#eval` command to evaluate our
+`hello_world` function.  This function evaluates to an IO action so
+the Lean VM executes it for us and writes our greeting to the
+terminal.
