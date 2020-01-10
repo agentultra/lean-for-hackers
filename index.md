@@ -267,3 +267,193 @@ types.
 The next thing we need to learn are more data types, structures, and
 libraries we have available to construct more interesting and useful
 programs.
+
+## Guessing Game ##
+
+Let's write a program that is a little more interactive.  An easy
+program that we should be able to confidently write in a new language
+after, "hello, world," is a guessing game.  Our program will pick a
+number between 1 and a 100.  The user will have a finite number of
+chances to guess the number.
+
+We'll have to learn a few more things: *loops*, how to get a random
+number, and checking to see if the user made the correct guess.
+
+### Random Numbers ###
+
+Lean's `io` system is spartan.  Thankfully we have ways to read files,
+get input, write output, and also get input from child processes.  We
+also have a random number generator but there's no way to get access
+to random input to seed it with in Lean.
+
+If you're on a unix-like system you'll likely have access to a device
+that generates random bytes for you.  If you're on Windows you'll have
+to come up with something clever.  We can use the `io.cmd` function to
+run a shell command to gather some bytes for us:
+
+``` lean
+import system.io
+
+open char
+open list
+open io
+
+def rand_range (lo : nat) (hi : nat) : io nat := do
+  r ← io.cmd { cmd := "head", args := ["-c 80", "/dev/urandom"] },
+  let seed         := foldl (+) 0 $ map to_nat r.to_list,
+  let gen          := mk_std_gen seed,
+  let (target, _)  := rand_nat gen lo hi,
+  return target
+```
+
+You may have to modify this for your platform of choice.  `io.cmd`
+returns back a string buffer which we map to `nat` and sum to get our
+number.  We use this to seed the `mk_std_gen` function which creates
+our generator.  We can then generate numbers!
+
+If you come across a function you're not familiar with or need to know
+the type of something be sure to use the `#check` command to ask Lean
+about it.  We've added `foldl` for summing up our list of numbers and
+we've used `map` to turn our `string` into a `list nat`.  There's also
+the `mk_std_gen` function and `rand_nat`.
+
+If any of these functions are unfamiliar to you look up a tutorial on
+`foldl` or `map` in Haskell or some other language as they're quite
+common.
+
+You can also use your editor's _jump to definition_ facility to browse
+what's available.  Jump to the `io` module to browse it or right to
+`io.cmd`.  This can be useful for finding things without having to
+search Github.
+
+Once we can generate a random number we can start our main function
+like so:
+
+``` lean
+def main : io unit := do
+  put_str "Guess a number between 1 and 100 (inclusive)",
+  target ← rand_range 1 100,
+  put_str $ nat.to_string target
+```
+
+Run the program and test that it's generating a random number.
+
+Next we'll add the prompt to user and check if they won.  Replace
+`main` with this:
+
+``` lean
+def main : io unit := do
+  put_str "Guess a number between 1 and 100 (inclusive)",
+  target ← rand_range 1 100,
+  put_str "Guess a number: ",
+  response ← get_line,
+  let guess := string.to_nat response,
+  if guess = target
+  then put_str "You win!\n"
+  else put_str "You lose!\n"
+```
+
+And run it.  It's not a very good game yet but one step at a time.
+Let's extract the guessing into an action we can call:
+
+``` lean
+def get_guess : io nat := do
+  put_str "Guess a number: ",
+  response ← get_line,
+  return $ string.to_nat response
+```
+
+And re-write `main` again:
+
+``` lean
+def main : io unit := do
+  put_str "Guess a number between 1 and 100 (inclusive)",
+  target ← rand_range 1 100,
+  guess ← get_guess,
+  if guess = target
+  then put_str "You win!\n"
+  else put_str "You lose!\n"
+```
+
+Here we've added a conditional expression: `if`.  Since this is an
+expression, it has a value, and you can return it from a function.  It
+also means there's no `else if`.  It's much like Haskell and other
+functional programming languages in this regard.
+
+Our last requirement is that the user get a number of guesses.  This
+should make it more fun and game like.  We have a handy function in
+`io` called, `iterate`.  Go ahead and use the `#check` command to see
+it's type.  Then replace `main` with this:
+
+``` lean
+def main : io unit := do
+  put_str "Guess a number between 1 and 100 (inclusive)",
+  target ← rand_range 1 100,
+  iterate 20 $ λ i,1
+    if i > 0 then do {
+      put_str $ "You have " ++ (to_string i) ++ " guesses.\n",
+      guess ← get_guess,
+      if guess = target then do {
+        put_str "You win!\n", return none
+      } else do {
+        if guess > target
+        then put_str "Too high!\n"
+        else put_str "Too low!\n",
+        return $ some (i - 1)
+      }
+    }
+    else
+      return none,
+ return ()
+```
+
+That's a lot more code but hopefully it is easy enough to see the big
+picture.  `iterate` is a function that iterates from an initial value
+it passes to a function we give it.  Our function which we start with
+the `λ i,` has one job: return an optional `nat`.  We see that in our
+function body with those lines: `return $ some (i - 1)` and `return
+none`.
+
+The former `return` we use to decrement `i` and in that case `iterate`
+will call our function again with the new value.  The latter `return`
+will cease iterating.
+
+When we run this we can play the game.  Let's just clean up the code a
+bit after a few rounds:
+
+``` lean
+def main : io unit := do
+  put_str "Guess a number between 1 and 100 (inclusive)",
+  target ← rand_range 1 100,
+  iterate 20 $ λ i,
+    if i > 0 then do {
+      put_str $ "You have " ++ (to_string i) ++ " guesses.\n",
+      guess ← get_guess,
+      match cmp guess target with
+      | eq := do { put_str "You won!\n", return none }
+      | gt := do { put_str "Too high!\n", return $ some (i - 1) }
+      | lt := do { put_str "Too low!\n", return $ some (i - 1) }
+      end
+    }
+    else
+      return none,
+ return ()
+```
+
+Like our `if` statement we have `match` which is also an expression.
+This is how Lean can do pattern matching on _inductive_ types.
+Instead of nesting all of those if expressions and do blocks we can
+regain some of our indentation with our `match`.  You can [read
+more](https://leanprover.github.io/reference/declarations.html#match-expressions)
+about there in the Lean reference documentation.
+
+### Conclusion ###
+
+We made a guessing game!  It wasn't too bad.  We had to work around
+Lean's limited `io` library but it worked!  We also learned how to use
+the `iterate` monadic action.  And how to pattern match on inductive
+structures.
+
+Play around with this game code a bit.  Use that `#check` command and
+jump to definitions.  Next we'll learn about how to define our own
+data structures.
