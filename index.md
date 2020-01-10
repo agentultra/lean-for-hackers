@@ -419,7 +419,13 @@ will call our function again with the new value.  The latter `return`
 will cease iterating.
 
 When we run this we can play the game.  Let's just clean up the code a
-bit after a few rounds:
+bit after a few rounds, first add this to the top of the file:
+
+``` lean
+open ordering
+```
+
+then:
 
 ``` lean
 def main : io unit := do
