@@ -463,3 +463,128 @@ structures.
 Play around with this game code a bit.  Use that `#check` command and
 jump to definitions.  Next we'll learn about how to define our own
 data structures.
+
+## Data Structures ##
+
+Lean is a _dependently typed_ functional programming language.  If
+you've heard of Idris, Agda, or Coq it's much like that.  What this
+means is that types can depend on data.  Or that we no longer need a
+separate language for types and terms as we do in say, Haskell.  A
+classic example is the type of vectors of a particular length.  In
+Haskell this is difficult to express in its type language because
+_data_ lives in terms... the expressions.  It's possible to extend the
+type system of Haskell to include such types but it is built-in to
+Lean and quite natural... and more powerful.
+
+Let's not jump in to the deep end yet.  We will start with defining
+data structures that you might be more familiar with first.  We'll add
+dependent types later as we progress.
+
+### Structures and Objects ###
+
+Most programmers are familiar with structures, records, etc.  Lean has
+some interesting features for you.  This is how you define a structure
+for _two-dimensional points_ on the natural numbers:
+
+    structure nat_point :=
+      mk :: (x : nat) (y : nat)
+
+The basic structure of this definition is:
+
+    structure <name> := <constructor> :: <fields>
+
+In order to create a point we need a constructor function.  We define
+the constructor function in our definition.  Each of the fields is a
+parameter to this function:
+
+    #check point.mk 4 8
+
+That's not the only function on `point` that Lean will generate for
+us.  You will also get functions for accessing fields, a `sizeof`
+function, and others which may come in handy later on.  To see them
+all, try this command:
+
+    #print prefix nat_point
+
+If you want to be able to parameterize the type of `point` so that
+users can create points with their own types we can add a `type
+parameter` to our definition:
+
+    structure point (a : Type) :=
+      mk :: (x : a) (y : a)
+
+Now the type of the `x` and `y` fields can be inferred by the types of
+the values given to the constructor function (as long as they're of
+the same type):
+
+    #check point.mk 3 4
+
+    def dx : int := -12
+    def dy : int := 22
+
+    #check point.mk dx dy
+
+Once you have a point you can access its fields:
+
+    def p : point nat := point 3 4
+
+    #eval point.x p
+    #eval point.y p
+
+We can then write functions using our new type like so:
+
+    def add (p q : point nat) :=
+      point.mk ((point.x p) + (point.x q)) ((point.y p) + (point.y q))
+
+That's a bit noisy so thankfully Lean will allow us to abbreviate our
+accessor function on our type parameter:
+
+    def add (p q : point nat) := point.mk (p.x + q.x) (p.y + q.y)
+
+Much better.  What Lean is doing when it sees `p.x` or `q.x` is
+inserting the `p` (the object to the left of the dot) as the implicit
+first argument of the function `x` (the object named on the right side
+of the dot) on the same type as `p`, which is in this case is `point`.
+So `p.x` in this expression is the same as `point.x p`.  Since Lean
+knows the type of `p` and the functions available on it we can shorten
+it down a bit.
+
+#### Objects ####
+
+Next we have _objects_.  They're basically like anonymous constructors
+for structures.  This is useful because so far when we use the
+constructor of our structure we've had to pass parameters by position.
+Objects allow us to pass them in by _name_ instead like so:
+
+    let p1 : point nat := { y := 20, x := 10 }
+
+For constructing large structures this can be the much more readable
+option.  You can also do this anonymously like so:
+
+    #check { point . y := 10, x := 20 }
+
+We pass the name of the constructor along with one of the fields and
+the rest of the structure is inferred.
+
+#### Inheritance ####
+
+One neat feature of structures is that you can _inherit_ new
+structures from them.  This is similar to languages Common Lisp that
+have similar features:
+
+    inductive color
+    | red
+    | green
+    | blue
+
+    structure color_point (a : Type) extends point a :=
+      mk :: (c : color)
+
+And now we have a structure `color_point` that inherits the fields of
+`point` and adds one of its own.  We construct one by passing in a
+structure of the parent type and our fields:
+
+    -- recall p1 : point nat
+    #check color_point.mk p1 green
+
+Nice!
