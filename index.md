@@ -336,7 +336,7 @@ like so:
 def main : io unit := do
   put_str "Guess a number between 1 and 100 (inclusive)",
   target ← rand_range 1 100,
-  put_str $ nat.to_string target
+  put_str $ to_string target
 ```
 
 Run the program and test that it's generating a random number.
