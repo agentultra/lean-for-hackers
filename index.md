@@ -9,12 +9,15 @@ learn more.
 
 ## Installation ##
 
-The best version of Lean available is the community fork at
-<https://github.com/leanprover-community/lean>.  You can get binary
-packages from the releases page or build from source.
+The community Lean project has great documentation for [getting
+started](https://leanprover-community.github.io/get_started.html) on
+all major platforms.
 
-I recommend building from source.  Make sure to add the built binaries
-to your path and you're off to the races.
+Another great way to get started, if you're on a Unix-like system, is
+[elan](https://github.com/Kha/elan).  This is like your _nvm_,
+_ghcup_, _rustup_, _rvm_, etc.  It's a light-weight package manager.
+It can install project-specific versions of Lean and manage global
+Lean installations for you.  This is my preferred method.
 
 The two major editors for working with Lean are [VS
 Code](https://code.visualstudio.com/) and
