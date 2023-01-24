@@ -392,7 +392,7 @@ it's type.  Then replace `main` with this:
 def main : io unit := do
   put_str "Guess a number between 1 and 100 (inclusive)",
   target ← rand_range 1 100,
-  iterate 20 $ λ i,1
+  iterate 20 $ λ i,
     if i > 0 then do {
       put_str $ "You have " ++ (to_string i) ++ " guesses.\n",
       guess ← get_guess,
